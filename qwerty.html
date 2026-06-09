@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prime Birthday — Nandini's Birthday Special</title>
+<link href="https://fonts.googleapis.com/css2?family=Amazon+Ember:wght@300;400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --prime: #00A8E1;
+    --prime-dark: #0080B0;
+    --prime-hover: #33BBEC;
+    --dark: #0F171E;
+    --nav-bg: #1A242F;
+    --card: #1F2D38;
+    --card2: #253545;
+    --text: #ffffff;
+    --muted: #8197A4;
+    --muted2: #A0B4BE;
+    --gold: #F5C518;
+    --green: #1DB954;
+    --orange: #FF9900;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'Inter', 'Amazon Ember', sans-serif;
+    font-size: 16px;
+    overflow-x: hidden;
+  }
+
+  /* ── PROFILE CHOOSER ── */
+  #profile-screen {
+    position: fixed; inset: 0;
+    background: var(--dark);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 9999;
+    gap: 40px;
+  }
+  .prime-logo-big {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 28px; font-weight: 700; letter-spacing: -0.5px;
+    color: #fff;
+  }
+  .prime-logo-big .prime-badge {
+    background: var(--prime);
+    color: #fff; font-size: 11px; font-weight: 700;
+    padding: 3px 8px; border-radius: 3px; letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  #profile-screen h2 {
+    font-size: clamp(20px, 3vw, 28px); font-weight: 400;
+    color: var(--muted2); letter-spacing: 0.5px;
+  }
+  .profiles {
+    display: flex; flex-wrap: wrap;
+    gap: 20px; justify-content: center;
+  }
+  .profile-card {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 10px;
+    cursor: pointer; transition: transform .2s;
+  }
+  .profile-card:hover { transform: scale(1.06); }
+  .profile-card:hover .avatar { border-color: var(--prime); }
+  .avatar {
+    width: 88px; height: 88px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 38px;
+    transition: border .2s;
+  }
+  .av1 { background: linear-gradient(135deg,#e91e8c,#f5a623); }
+  .av2 { background: linear-gradient(135deg,#7c3aed,#ec4899); }
+  .av3 { background: linear-gradient(135deg,#0ea5e9,#22d3ee); }
+  .profile-card span { font-size: 13px; color: var(--muted2); }
+  .switch-btn {
+    background: transparent; border: 1px solid var(--muted);
+    color: var(--muted); padding: 9px 28px;
+    font-size: 13px; letter-spacing: 1.5px;
+    cursor: pointer; text-transform: uppercase;
+    border-radius: 3px;
+    transition: color .2s, border-color .2s;
+  }
+  .switch-btn:hover { color: #fff; border-color: #fff; }
+
+  /* ── NAV ── */
+  #main { display: none; }
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 64px; z-index: 100;
+    display: flex; align-items: center;
+    padding: 0 3%;
+    background: var(--nav-bg);
+    border-bottom: 1px solid rgba(255,255,255,.06);
+    gap: 20px;
+  }
+  .nav-logo {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 20px; font-weight: 700; color: #fff;
+    text-decoration: none; flex-shrink: 0;
+  }
+  .nav-logo .nb { color: var(--prime); font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 2px; background: var(--prime); color: #fff; margin-left: 2px; }
+  .nav-links { display: flex; gap: 4px; list-style: none; }
+  .nav-links a {
+    color: var(--muted2); font-size: 14px; text-decoration: none;
+    padding: 6px 12px; border-radius: 4px;
+    transition: color .2s, background .2s;
+  }
+  .nav-links a:hover { color: #fff; background: rgba(255,255,255,.07); }
+  .nav-links a.active { color: #fff; }
+  .nav-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+  .nav-icon { color: var(--muted2); font-size: 20px; cursor: pointer; transition: color .2s; }
+  .nav-icon:hover { color: #fff; }
+  .nav-prime-badge {
+    background: var(--prime); color: #fff;
+    font-size: 11px; font-weight: 700; padding: 3px 8px;
+    border-radius: 3px; letter-spacing: 0.5px;
+    cursor: pointer;
+  }
+  .nav-avatar-circle {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg,#e91e8c,#f5a623);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; cursor: pointer; border: 2px solid var(--prime);
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    height: 92vh; min-height: 500px;
+    display: flex; align-items: center;
+    padding: 64px 5% 0;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 70% 50%, rgba(0,168,225,.12) 0%, transparent 55%),
+      linear-gradient(to right, var(--dark) 35%, transparent 70%),
+      linear-gradient(to bottom, transparent 60%, var(--dark) 100%),
+      linear-gradient(135deg, #0a1520 0%, #0d1e2c 100%);
+  }
+  .hero-art {
+    position: absolute; right: 3%; top: 50%;
+    transform: translateY(-50%);
+    width: min(480px, 45vw);
+    height: min(640px, 70vh);
+    border-radius: 12px;
+    background: linear-gradient(145deg, #1a2f40, #0d1e2c);
+    display: flex; align-items: center; justify-content: center;
+    font-size: min(160px, 18vw);
+    box-shadow: 0 24px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(0,168,225,.15);
+    overflow: hidden;
+  }
+  .hero-art::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,.5));
+  }
+  .hero-art-label {
+    position: absolute; bottom: 16px; left: 16px; right: 16px;
+    font-size: 13px; font-weight: 600; color: var(--muted2);
+    letter-spacing: 1px; text-transform: uppercase;
+    z-index: 2;
+  }
+
+  .hero-content { position: relative; z-index: 2; max-width: 560px; }
+  .hero-eyebrow {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 16px;
+  }
+  .prime-tag {
+    background: var(--prime); color: #fff;
+    font-size: 12px; font-weight: 700; padding: 4px 10px;
+    border-radius: 3px; letter-spacing: 1px; text-transform: uppercase;
+  }
+  .orig-tag { font-size: 13px; color: var(--muted2); font-weight: 500; }
+  .hero-title {
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 700; line-height: 1.05;
+    letter-spacing: -1px; margin-bottom: 12px;
+  }
+  .hero-title em { color: var(--prime); font-style: normal; }
+  .hero-rating-row {
+    display: flex; align-items: center; gap: 14px;
+    flex-wrap: wrap; margin-bottom: 16px;
+  }
+  .star-rating { color: var(--gold); font-size: 14px; display: flex; align-items: center; gap: 4px; }
+  .star-rating span { color: var(--muted2); font-size: 13px; }
+  .meta-pill {
+    font-size: 12px; color: var(--muted2);
+    border: 1px solid rgba(255,255,255,.2);
+    padding: 2px 8px; border-radius: 12px;
+  }
+  .hd-badge {
+    font-size: 11px; font-weight: 700;
+    border: 1px solid var(--prime); color: var(--prime);
+    padding: 2px 6px; border-radius: 3px;
+  }
+  .hero-desc {
+    font-size: 15px; color: var(--muted2); line-height: 1.65;
+    max-width: 500px; margin-bottom: 28px;
+  }
+  .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+  .btn-watch {
+    background: var(--prime); color: #fff;
+    border: none; padding: 13px 28px;
+    font-size: 15px; font-weight: 700;
+    border-radius: 4px; cursor: pointer;
+    display: flex; align-items: center; gap: 8px;
+    transition: background .2s;
+  }
+  .btn-watch:hover { background: var(--prime-hover); }
+  .hero-sub-info { font-size: 13px; color: var(--muted); }
+  .hero-sub-info strong { color: var(--prime); }
+
+  /* ── SECTIONS ── */
+  section { padding: 40px 5%; }
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .section-title { font-size: 20px; font-weight: 700; }
+  .see-all { font-size: 13px; color: var(--prime); cursor: pointer; text-decoration: none; }
+  .see-all:hover { text-decoration: underline; }
+
+  /* ── CAST ── */
+  .cast-row {
+    display: flex; gap: 16px; overflow-x: auto;
+    padding-bottom: 8px; scrollbar-width: none;
+  }
+  .cast-row::-webkit-scrollbar { display: none; }
+  .cast-card {
+    flex-shrink: 0; width: 120px; text-align: center;
+  }
+  .cast-avatar {
+    width: 90px; height: 90px; border-radius: 50%;
+    margin: 0 auto 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px;
+    border: 2px solid rgba(0,168,225,.3);
+    transition: border-color .2s, transform .2s;
+    cursor: pointer;
+  }
+  .cast-card:hover .cast-avatar { border-color: var(--prime); transform: scale(1.05); }
+  .cast-name { font-size: 13px; font-weight: 600; }
+  .cast-role { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* ── EPISODES ── */
+  .ep-list { display: flex; flex-direction: column; gap: 1px; }
+  .ep-item {
+    display: grid;
+    grid-template-columns: 48px 200px 1fr auto;
+    align-items: center; gap: 20px;
+    padding: 18px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .ep-item:hover { background: var(--card); }
+  .ep-number { font-size: 24px; font-weight: 300; color: var(--muted); text-align: center; }
+  .ep-thumb {
+    width: 200px; height: 112px;
+    border-radius: 6px; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 44px; flex-shrink: 0;
+    position: relative;
+  }
+  .ep-thumb .play-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,.5);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; opacity: 0; transition: opacity .2s;
+  }
+  .ep-item:hover .ep-thumb .play-overlay { opacity: 1; }
+  .ep-info { min-width: 0; }
+  .ep-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .ep-meta { font-size: 12px; color: var(--muted); margin-bottom: 6px; display: flex; gap: 10px; }
+  .ep-desc { font-size: 13px; color: var(--muted2); line-height: 1.55; }
+  .ep-actions { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+  .ep-dl { font-size: 20px; color: var(--muted); cursor: pointer; transition: color .2s; }
+  .ep-dl:hover { color: var(--prime); }
+
+  /* ── COMING SOON ── */
+  .coming-banner {
+    margin: 0 5% 40px;
+    background: linear-gradient(135deg, rgba(0,168,225,.12), rgba(0,80,120,.08));
+    border: 1px solid rgba(0,168,225,.25);
+    border-radius: 12px;
+    padding: 48px 5%; text-align: center;
+  }
+  .coming-eyebrow {
+    font-size: 11px; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--prime);
+    margin-bottom: 10px;
+  }
+  .coming-title {
+    font-size: clamp(24px, 4vw, 48px);
+    font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px;
+  }
+  .coming-sub { color: var(--muted2); font-size: 15px; margin-bottom: 32px; }
+  .countdown { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+  .count-box {
+    background: var(--card); border-radius: 8px;
+    padding: 18px 24px; min-width: 84px; text-align: center;
+    border: 1px solid rgba(0,168,225,.15);
+  }
+  .count-num {
+    font-size: 44px; font-weight: 700; line-height: 1;
+    color: var(--prime);
+  }
+  .count-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--nav-bg);
+    border-top: 1px solid rgba(255,255,255,.06);
+    padding: 40px 5% 28px;
+    margin-top: 20px;
+  }
+  .footer-logo { margin-bottom: 20px; }
+  .footer-links {
+    display: flex; flex-wrap: wrap; gap: 10px 24px;
+    margin-bottom: 20px;
+  }
+  .footer-links a { color: var(--muted); font-size: 13px; text-decoration: none; }
+  .footer-links a:hover { color: #fff; text-decoration: underline; }
+  .footer-copy { color: #3a5060; font-size: 12px; }
+
+  /* ── MODAL ── */
+  #modal {
+    display: none; position: fixed; inset: 0; z-index: 500;
+    background: rgba(0,0,0,.85);
+    align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  #modal.open { display: flex; }
+  .modal-box {
+    background: var(--nav-bg);
+    border-radius: 12px; max-width: 700px; width: 100%;
+    overflow: hidden; position: relative;
+    max-height: 90vh; overflow-y: auto;
+    border: 1px solid rgba(0,168,225,.2);
+  }
+  .modal-hero {
+    height: 260px;
+    background: linear-gradient(135deg,#0a1e2e,#0d2030);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 90px; position: relative;
+  }
+  .modal-hero::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
+    background: linear-gradient(to bottom, transparent, var(--nav-bg));
+  }
+  .modal-body { padding: 24px 28px 28px; }
+  .modal-eyebrow { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .modal-title { font-size: 32px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px; }
+  .modal-meta { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+  .modal-desc { color: var(--muted2); font-size: 14px; line-height: 1.7; margin-bottom: 24px; }
+  .modal-stats-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+  .stat-row { margin-bottom: 12px; }
+  .stat-label { font-size: 13px; color: var(--muted2); margin-bottom: 5px; display: flex; justify-content: space-between; }
+  .stat-bar { height: 5px; background: rgba(255,255,255,.1); border-radius: 3px; overflow: hidden; }
+  .stat-fill { height: 100%; background: var(--prime); border-radius: 3px; }
+  .modal-close {
+    position: absolute; top: 14px; right: 14px;
+    background: rgba(0,0,0,.5); border: none; color: #fff;
+    width: 34px; height: 34px; border-radius: 50%;
+    font-size: 16px; cursor: pointer; z-index: 10;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s;
+  }
+  .modal-close:hover { background: rgba(255,255,255,.15); }
+  .modal-detail { color: var(--muted); font-size: 13px; line-height: 1.9; }
+  .modal-detail strong { color: var(--muted2); }
+
+  @media (max-width: 640px) {
+    .ep-item { grid-template-columns: 32px 130px 1fr; }
+    .ep-thumb { width: 130px; height: 73px; font-size: 32px; }
+    .ep-actions { display: none; }
+    nav .nav-links { display: none; }
+    .hero-art { display: none; }
+    .hero { height: auto; padding: 100px 5% 60px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- PROFILE CHOOSER -->
+<div id="profile-screen">
+  <div class="prime-logo-big">
+    amazon <span class="prime-badge">prime</span>
+  </div>
+  <h2>Who's watching?</h2>
+  <div class="profiles">
+    <div class="profile-card" onclick="enterMain()">
+      <div class="avatar av1">👑</div>
+      <span>Nandini</span>
+    </div>
+    <div class="profile-card" onclick="enterMain()">
+      <div class="avatar av2">💫</div>
+      <span>Best Friends</span>
+    </div>
+    <div class="profile-card" onclick="enterMain()">
+      <div class="avatar av3">❤️</div>
+      <span>Family</span>
+    </div>
+  </div>
+  <button class="switch-btn">Manage Profiles</button>
+</div>
+
+<!-- MAIN PAGE -->
+<div id="main">
+
+  <!-- NAV -->
+  <nav id="navbar">
+    <a class="nav-logo" href="#">amazon <span class="nb">prime</span></a>
+    <ul class="nav-links">
+      <li><a href="#" class="active">Home</a></li>
+      <li><a href="#">TV Shows</a></li>
+      <li><a href="#">Movies</a></li>
+      <li><a href="#">Originals</a></li>
+      <li><a href="#">My Stuff</a></li>
+    </ul>
+    <div class="nav-right">
+      <span class="nav-icon">🔍</span>
+      <span class="nav-icon">🔔</span>
+      <div class="nav-avatar-circle">👑</div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-art">
+      🎂
+      <div class="hero-art-label">Nandini's Birthday Special · 2026</div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">
+        <span class="prime-tag">Prime Original</span>
+        <span class="orig-tag">Birthday Edition</span>
+      </div>
+      <h1 class="hero-title">Nandini's<br><em>Birthday</em><br>Special</h1>
+      <div class="hero-rating-row">
+        <div class="star-rating">★★★★★ <span>5.0</span></div>
+        <span class="meta-pill">2026</span>
+        <span class="meta-pill">4 Episodes</span>
+        <span class="meta-pill">18+</span>
+        <span class="hd-badge">4K UHD</span>
+      </div>
+      <p class="hero-desc">A captivating tribute celebrating the extraordinary Nandini — a rare blend of unwavering inner strength and a profoundly warm soul. From her birth as a star to the ultimate comeback. Watch now, exclusively on Prime.</p>
+      <div class="hero-btns">
+        <button class="btn-watch" onclick="openModal()">▶ &nbsp;Watch Now</button>
+      </div>
+      <div class="hero-sub-info">Included with <strong>Prime</strong> · Start watching today</div>
+    </div>
+  </div>
+
+  <!-- STARRING -->
+  <section>
+    <div class="section-header">
+      <div class="section-title">Starring</div>
+    </div>
+    <div class="cast-row">
+      <div class="cast-card">
+        <div class="cast-avatar" style="background:linear-gradient(135deg,#e91e8c,#f5a623)">👑</div>
+        <div class="cast-name">Nandini</div>
+        <div class="cast-role">The One & Only</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EPISODES -->
+  <section>
+    <div class="section-header">
+      <div class="section-title">Episodes · Season 1</div>
+      <span class="meta-pill">4 Episodes</span>
+    </div>
+    <div class="ep-list">
+
+      <div class="ep-item">
+        <div class="ep-number">1</div>
+        <div class="ep-thumb" style="background:linear-gradient(135deg,#1a0a2e,#2d1560)">
+          ⭐
+          <div class="play-overlay">▶</div>
+        </div>
+        <div class="ep-info">
+          <div class="ep-title">Birth of a Star</div>
+          <div class="ep-meta"><span>S1 · E1</span><span>45 min</span></div>
+          <div class="ep-desc">The universe made a decision the day Nandini arrived. This episode takes you back to the very beginning — the moment a star was born, lighting up every room she ever walked into. Some people are just made differently.</div>
+        </div>
+        <div class="ep-actions">
+          <span class="ep-dl" title="Download">⬇</span>
+          <span class="ep-dl" title="More">⋯</span>
+        </div>
+      </div>
+
+      <div class="ep-item">
+        <div class="ep-number">2</div>
+        <div class="ep-thumb" style="background:linear-gradient(135deg,#0a2e1a,#0d5c2e)">
+          🌸
+          <div class="play-overlay">▶</div>
+        </div>
+        <div class="ep-info">
+          <div class="ep-title">Rise of the Girl</div>
+          <div class="ep-meta"><span>S1 · E2</span><span>52 min</span></div>
+          <div class="ep-desc">From quiet beginnings to becoming the most magnetic presence in every space she occupied. Nandini didn't just grow — she bloomed. Watch her find her voice, own her power, and turn every challenge into a stepping stone.</div>
+        </div>
+        <div class="ep-actions">
+          <span class="ep-dl">⬇</span>
+          <span class="ep-dl">⋯</span>
+        </div>
+      </div>
+
+      <div class="ep-item">
+        <div class="ep-number">3</div>
+        <div class="ep-thumb" style="background:linear-gradient(135deg,#1e1a0a,#3d3010)">
+          🌧️
+          <div class="play-overlay">▶</div>
+        </div>
+        <div class="ep-info">
+          <div class="ep-title">The Downfall</div>
+          <div class="ep-meta"><span>S1 · E3</span><span>58 min</span></div>
+          <div class="ep-desc">Every legend has a chapter they'd rather skip. This is Nandini's darkest episode — the storms, the setbacks, the silent battles fought alone. Raw, real, and brutally honest. But even in the downfall, she never stopped being herself.</div>
+        </div>
+        <div class="ep-actions">
+          <span class="ep-dl">⬇</span>
+          <span class="ep-dl">⋯</span>
+        </div>
+      </div>
+
+      <div class="ep-item">
+        <div class="ep-number">4</div>
+        <div class="ep-thumb" style="background:linear-gradient(135deg,#2e0a0a,#6b1515)">
+          🔥
+          <div class="play-overlay">▶</div>
+        </div>
+        <div class="ep-info">
+          <div class="ep-title">The Comeback</div>
+          <div class="ep-meta"><span>S1 · E4</span><span>60 min</span></div>
+          <div class="ep-desc">She fell. She felt it. Then she rose — harder, sharper, more radiant than ever. The comeback is always louder than the setback. This finale is Nandini at her most unstoppable, stepping back into her power with a smile that says: I'm just getting started.</div>
+        </div>
+        <div class="ep-actions">
+          <span class="ep-dl">⬇</span>
+          <span class="ep-dl">⋯</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- COMING NEXT YEAR -->
+  <div class="coming-banner">
+    <div class="coming-eyebrow">Coming Next Year · Prime Original</div>
+    <h2 class="coming-title">Another Year of Adventures</h2>
+    <p class="coming-sub">Season 2 is already in production. Stay tuned for another year of memories, laughter, and extraordinary moments.</p>
+    <div class="countdown">
+      <div class="count-box"><div class="count-num" id="cd-days">364</div><div class="count-label">Days</div></div>
+      <div class="count-box"><div class="count-num" id="cd-hours">00</div><div class="count-label">Hours</div></div>
+      <div class="count-box"><div class="count-num" id="cd-mins">00</div><div class="count-label">Mins</div></div>
+      <div class="count-box"><div class="count-num" id="cd-secs">00</div><div class="count-label">Secs</div></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">
+      <span style="font-size:18px;font-weight:700;">amazon <span style="color:var(--prime);font-size:11px;font-weight:700;padding:2px 6px;border-radius:2px;background:var(--prime);color:#fff;">prime</span></span>
+    </div>
+    <div class="footer-links">
+      <a href="#">Help</a>
+      <a href="#">Terms of Use</a>
+      <a href="#">Privacy Notice</a>
+      <a href="#">Cookie Preferences</a>
+      <a href="#">Impressum</a>
+      <a href="#">Interest-Based Ads</a>
+      <a href="#">Accessibility</a>
+      <a href="#">Conditions of Use</a>
+    </div>
+    <div class="footer-copy">© 2026 Prime Birthday Edition · Made with ❤️ by her HB Brother</div>
+  </footer>
+</div>
+
+<!-- MODAL -->
+<div id="modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-hero">🎂</div>
+    <div class="modal-body">
+      <div class="modal-eyebrow">
+        <span class="prime-tag">Prime Original</span>
+        <span style="font-size:13px;color:var(--muted2)">Birthday Edition</span>
+      </div>
+      <div class="modal-title">Nandini's Birthday Special</div>
+      <div class="modal-meta">
+        <div class="star-rating">★★★★★ <span>5.0</span></div>
+        <span class="meta-pill">2026</span>
+        <span class="meta-pill">18+</span>
+        <span class="hd-badge">4K UHD</span>
+      </div>
+      <p class="modal-desc">
+        The ultimate celebratory anthology honoring Nandini — a tribute to a beautiful, resilient, and warm person who stands strong through life's challenges while keeping her heart genuinely emotional and real. From her birth as a star to the most powerful comeback — this Prime Original captures the essence of an extraordinary individual.<br><br>
+        <strong>Director's Note:</strong> "Made with code, cake, and love. Happy Birthday Nandini! 🎉"
+      </p>
+      <div class="modal-stats-title">Character Stats</div>
+      <div class="stat-row">
+        <div class="stat-label"><span>Cake Capacity</span><span>100%</span></div>
+        <div class="stat-bar"><div class="stat-fill" style="width:100%"></div></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-label"><span>Hype Energy</span><span>95%</span></div>
+        <div class="stat-bar"><div class="stat-fill" style="width:95%"></div></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-label"><span>Bug-Fixing Speed</span><span>90%</span></div>
+        <div class="stat-bar"><div class="stat-fill" style="width:90%"></div></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-label"><span>Sleep Average</span><span>15%</span></div>
+        <div class="stat-bar"><div class="stat-fill" style="width:15%"></div></div>
+      </div>
+      <br>
+      <div class="modal-detail">
+        <strong>Cast:</strong> Nandini (The One & Only)<br>
+        <strong>Director:</strong> The Birthday Planning Committee<br>
+        <strong>Genres:</strong> Heartwarming, Emotional, Comedy, Celebration<br>
+        <strong>Maturity Rating:</strong> 18+ (dangerous cake-eating speed & late-night coding sessions)
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function enterMain() {
+    document.getElementById('profile-screen').style.display = 'none';
+    document.getElementById('main').style.display = 'block';
+    startCountdown();
+  }
+
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').style.boxShadow =
+      window.scrollY > 10 ? '0 4px 20px rgba(0,0,0,.4)' : 'none';
+  });
+
+  function openModal() {
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('modal').addEventListener('click', e => {
+    if (e.target === document.getElementById('modal')) closeModal();
+  });
+
+  function startCountdown() {
+    function tick() {
+      const now = new Date();
+      let next = new Date(now.getFullYear(), 5, 8);
+      if (now >= next) next = new Date(now.getFullYear() + 1, 5, 8);
+      const diff = next - now;
+      document.getElementById('cd-days').textContent = String(Math.floor(diff/86400000)).padStart(3,'0');
+      document.getElementById('cd-hours').textContent = String(Math.floor((diff%86400000)/3600000)).padStart(2,'0');
+      document.getElementById('cd-mins').textContent = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+      document.getElementById('cd-secs').textContent = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+    }
+    tick(); setInterval(tick, 1000);
+  }
+</script>
+</body>
+</html>
