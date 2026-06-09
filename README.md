@@ -1,1 +1,0 @@
-# primevideo-brithday-page-edit
